@@ -7,6 +7,7 @@ module.exports = {
   context: path.join(__dirname, '../server'),
   devtool: 'source-map',
   entry: [
+    'babel-polyfill',
     './routes/index.js',
   ],
   mode: 'production',
@@ -51,5 +52,10 @@ module.exports = {
     new UglifyJSPlugin({
       sourceMap: true
     }),
-  ]
+  ],
+  node: {
+    fs: "empty",
+    net: 'empty',
+    tls: 'empty'
+  },
 };

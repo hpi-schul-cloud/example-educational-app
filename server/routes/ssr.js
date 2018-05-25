@@ -1,16 +1,23 @@
-import express from 'express';
 import React from 'react';
 import ReactDOMServer from 'react-dom/server';
 import { createStore } from 'redux';
 import { Provider } from 'react-redux';
 import { StaticRouter } from 'react-router';
+import oauth2 from 'simple-oauth2';
+import Router from 'express-promise-router';
+import fetch from 'isomorphic-fetch',
 import reducers from '../../client/src/reducers/index';
-import { LIST_ACTIONS } from '../../client/src/consts/action_types';
+import { setAuthorizeUri, setIsAuthenticated } from '../../client/src/actions/auth_actions';
+import { addItem } from '../../client/src/actions/list_actions';
 import App from '../../client/src/app';
+import config from '../config';
 
-const router = express.Router();
 
-router.get('/', (req, res) => {
+const router = new Router();
+
+router.get('/', async (req, res) => {
+  let accessToken = null;
+
   /*
     http://redux.js.org/docs/recipes/ServerRendering.html
   */
@@ -35,14 +42,44 @@ router.get('/', (req, res) => {
       But if you inject the latest items/articles before it reaches the user, the Search Engine
       will see the item/article immediately.
        */
-  store.dispatch({
-    type: LIST_ACTIONS.ITEM_ADD,
-    item: {
-      name: 'middleware',
-      description: `Redux middleware solves different problems than Express or Koa middleware, but in a conceptually similar way.
-      It provides a third-party extension point between dispatching an action, and the moment it reaches the reducer.`,
-    },
+  store.dispatch(addItem({
+    name: 'middleware',
+    description: `Redux middleware solves different problems than Express or Koa middleware, but in a conceptually similar way.
+    It provides a third-party extension point between dispatching an action, and the moment it reaches the reducer.`,
+  }));
+
+  // generate OAuth2 auth URI for redirection
+  const oauth = oauth2.create(config.credentials);
+  const authorizationUri = oauth.authorizationCode.authorizeURL({
+    redirect_uri: 'http://localhost:3000/auth',
+    scope: 'openid',
+    state: 'blablablabla',
   });
+  store.dispatch(setAuthorizeUri(authorizationUri));
+
+  // request access token
+  if (req.query.code) {
+    const tokenConfig = {
+      code: req.query.code,
+      redirect_uri: 'http://localhost:3000/auth',
+    };
+
+    try {
+      const result = await oauth.authorizationCode.getToken(tokenConfig);
+      store.dispatch(setIsAuthenticated(true));
+      accessToken = oauth.accessToken.create(result);
+    } catch (ex) {
+      console.log('Access Token Error: ', ex);
+    }
+  }
+
+  console.log(accessToken);
+  if (accessToken) {
+    // TODO: get classes
+    // console.log(accessToken.token.access_token);
+    // const metadata = await fetch('http://bp.schul-cloud.org:3031/provider/users/4b81c9b2-7c8c-4255-83f1-268e4d83d71b/metadata');
+    // console.log(metadata);
+  }
 
   const context = {};
 

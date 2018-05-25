@@ -56,4 +56,9 @@ module.exports = {
     }),
     new ExtractTextPlugin('css/main.css'),
   ],
+  node: {
+    fs: "empty",
+    net: 'empty',
+    tls: 'empty'
+  },
 };

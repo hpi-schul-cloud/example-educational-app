@@ -59,4 +59,9 @@ module.exports = {
       inject: false,
     }),
   ],
+  node: {
+    fs: "empty",
+    net: 'empty',
+    tls: 'empty'
+  },
 };
