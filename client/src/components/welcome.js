@@ -9,7 +9,7 @@ class Welcome extends Component {
   render() {
     const { isAuthenticated, match } = this.props;
 
-    if (!isAuthenticated) return <Redirect to="/auth" />;
+    // if (!isAuthenticated) return <Redirect to="/auth" />;
 
     const { userId } = match.params;
     const userNameURL = 'http://localhost:3100/account/username/';

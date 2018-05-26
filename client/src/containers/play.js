@@ -1,5 +1,5 @@
 import { connect } from 'react-redux';
-import Welcome from '../components/welcome';
+import Play from '../components/play';
 
 /*
 This is a redux specific function.
@@ -9,6 +9,10 @@ Whenever this list changes, any component that is using this list of item will r
  */
 const mapStateToProps = state => ({
   isAuthenticated: state.auth.isAuthenticated,
+  role: state.roster.role,
+  pseudonym: state.roster.pseudonym,
+  students: state.roster.students,
+  teachers: state.roster.teachers,
 });
 
 /*
@@ -24,4 +28,4 @@ const mapDispatchToProps = dispatch => ({
 Here we are creating a Higher order component
 https://facebook.github.io/react/docs/higher-order-components.html
  */
-export default connect(mapStateToProps, mapDispatchToProps)(Welcome);
+export default connect(mapStateToProps, mapDispatchToProps)(Play);

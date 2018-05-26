@@ -5,10 +5,12 @@ import { Provider } from 'react-redux';
 import { StaticRouter } from 'react-router';
 import oauth2 from 'simple-oauth2';
 import Router from 'express-promise-router';
-import fetch from 'isomorphic-fetch',
+import fetch from 'isomorphic-fetch';
+import jwt from 'jsonwebtoken';
 import reducers from '../../client/src/reducers/index';
 import { setAuthorizeUri, setIsAuthenticated } from '../../client/src/actions/auth_actions';
 import { addItem } from '../../client/src/actions/list_actions';
+import { setRole, setPseudonym, setStudents, setTeachers } from '../../client/src/actions/roster_actions';
 import App from '../../client/src/app';
 import config from '../config';
 
@@ -16,37 +18,17 @@ import config from '../config';
 const router = new Router();
 
 router.get('/', async (req, res) => {
-  let accessToken = null;
-
-  /*
-    http://redux.js.org/docs/recipes/ServerRendering.html
-  */
   const store = createStore(reducers);
 
-  /*
-      We can dispatch actions from server side as well. This can be very useful if you want
-      to inject some initial data into the app. For example, if you have some articles that
-      you have fetched from database and you want to load immediately after the user has loaded
-      the webpage, you can do so in here.
-
-      Here we are inject an list item into our app. Normally once the user has loaded the webpage
-      we would make a request to the server and get the latest item list. But in the server we have
-      instant connection to a database (for example, if you have a mongoDB or MySQL database
-      installed in the server which contains all you items).
-      So you can quickly fetch and inject it into the webpage.
-
-      This will help SEO as well. If you load the webpage and make a request to the server to get
-      all the latest items/articles, by the time Google Search Engine may not see all the updated
-      items/articles.
-
-      But if you inject the latest items/articles before it reaches the user, the Search Engine
-      will see the item/article immediately.
-       */
   store.dispatch(addItem({
     name: 'middleware',
     description: `Redux middleware solves different problems than Express or Koa middleware, but in a conceptually similar way.
     It provides a third-party extension point between dispatching an action, and the moment it reaches the reducer.`,
   }));
+
+  if (req.query.logout) {
+    req.session.accessToken = null;
+  }
 
   // generate OAuth2 auth URI for redirection
   const oauth = oauth2.create(config.credentials);
@@ -66,19 +48,34 @@ router.get('/', async (req, res) => {
 
     try {
       const result = await oauth.authorizationCode.getToken(tokenConfig);
-      store.dispatch(setIsAuthenticated(true));
-      accessToken = oauth.accessToken.create(result);
+      req.session.accessToken = oauth.accessToken.create(result);
     } catch (ex) {
       console.log('Access Token Error: ', ex);
     }
   }
 
-  console.log(accessToken);
-  if (accessToken) {
-    // TODO: get classes
+  const accessToken = (req.session.accessToken
+    ? req.session.accessToken
+    : null
+  );
+
+  store.dispatch(setIsAuthenticated(!!accessToken));
+
+  if (req.session.role) {
+    store.dispatch(setRole(req.session.role));
+    store.dispatch(setPseudonym(req.session.pseudonym));
+  } else if (accessToken) {
+    const { sub } = jwt.decode(accessToken.token.id_token);
+    store.dispatch(setPseudonym(sub));
     // console.log(accessToken.token.access_token);
-    // const metadata = await fetch('http://bp.schul-cloud.org:3031/provider/users/4b81c9b2-7c8c-4255-83f1-268e4d83d71b/metadata');
-    // console.log(metadata);
+    const response = await fetch(
+      `https://bp.schul-cloud.org:3031/provider/users/${sub}/metadata`,
+      { headers: { Authorization: accessToken.token.access_token } },
+    );
+    const metadata = await response.json();
+    store.dispatch(setRole(metadata.data.type));
+    req.session.pseudonym = sub;
+    req.session.role = metadata.data.type;
   }
 
   const context = {};
@@ -95,6 +92,7 @@ router.get('/', async (req, res) => {
   );
 
   const finalState = store.getState();
+  // console.log('finalState', finalState);
 
   if (context.url) {
     res.writeHead(301, {

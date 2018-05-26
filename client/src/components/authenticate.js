@@ -14,7 +14,7 @@ class Authenticate extends Component {
   render() {
     const { isAuthenticated } = this.props;
     if (isAuthenticated) {
-      return (<Redirect to="/view/store" />);
+      return (<Redirect to="/play/" />);
     }
     return <p>Leite weiter...</p>;
   }
