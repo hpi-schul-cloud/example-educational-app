@@ -15,6 +15,7 @@ export const AUTH = {
 export const ROSTER = {
   role: null,
   pseudonym: null,
+  group: null,
   students: [],
   teachers: [],
 };

@@ -8,9 +8,18 @@ import Router from 'express-promise-router';
 import fetch from 'isomorphic-fetch';
 import jwt from 'jsonwebtoken';
 import reducers from '../../client/src/reducers/index';
-import { setAuthorizeUri, setIsAuthenticated } from '../../client/src/actions/auth_actions';
+import {
+  setAuthorizeUri,
+  setIsAuthenticated,
+} from '../../client/src/actions/auth_actions';
 import { addItem } from '../../client/src/actions/list_actions';
-import { setRole, setPseudonym, setStudents, setTeachers } from '../../client/src/actions/roster_actions';
+import {
+  setRole,
+  setPseudonym,
+  setGroup,
+  setStudents,
+  setTeachers,
+} from '../../client/src/actions/roster_actions';
 import App from '../../client/src/app';
 import config from '../config';
 
@@ -64,18 +73,40 @@ router.get('/', async (req, res) => {
   if (req.session.role) {
     store.dispatch(setRole(req.session.role));
     store.dispatch(setPseudonym(req.session.pseudonym));
+    store.dispatch(setGroup(req.session.group));
+    store.dispatch(setStudents(req.session.students));
+    store.dispatch(setTeachers(req.session.teachers));
   } else if (accessToken) {
     const { sub } = jwt.decode(accessToken.token.id_token);
     store.dispatch(setPseudonym(sub));
     // console.log(accessToken.token.access_token);
-    const response = await fetch(
+    const responseMetadata = await fetch(
       `https://bp.schul-cloud.org:3031/provider/users/${sub}/metadata`,
       { headers: { Authorization: accessToken.token.access_token } },
     );
-    const metadata = await response.json();
+    const metadata = await responseMetadata.json();
     store.dispatch(setRole(metadata.data.type));
+    const responseGroups = await fetch(
+      `https://bp.schul-cloud.org:3031/provider/users/${sub}/groups`,
+      { headers: { Authorization: accessToken.token.access_token } },
+    );
+    const groups = await responseGroups.json();
+    store.dispatch(setGroup(groups.data.groups[0].name));
+    const responseUsers = await fetch(
+      `https://bp.schul-cloud.org:3031/provider/groups/${groups.data.groups[0].group_id}`,
+      { headers: { Authorization: accessToken.token.access_token } },
+    );
+
+    const users = await responseUsers.json();
+    store.dispatch(setStudents(users.data.students));
+    store.dispatch(setTeachers(users.data.teachers));
+
+    // save to session
     req.session.pseudonym = sub;
     req.session.role = metadata.data.type;
+    req.session.group = metadata.data.group;
+    req.session.students = users.data.students;
+    req.session.teachers = users.data.teachers;
   }
 
   const context = {};

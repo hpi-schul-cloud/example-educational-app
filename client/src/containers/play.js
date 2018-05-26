@@ -11,6 +11,7 @@ const mapStateToProps = state => ({
   isAuthenticated: state.auth.isAuthenticated,
   role: state.roster.role,
   pseudonym: state.roster.pseudonym,
+  group: state.roster.group,
   students: state.roster.students,
   teachers: state.roster.teachers,
 });

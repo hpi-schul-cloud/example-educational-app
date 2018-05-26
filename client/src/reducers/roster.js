@@ -7,6 +7,8 @@ export default (state = ROSTER, action) => {
       return { ...state, role: action.role };
     case ROSTER_ACTIONS.SET_PSEUDONYM:
       return { ...state, pseudonym: action.pseudonym };
+    case ROSTER_ACTIONS.SET_GROUP:
+      return { ...state, group: action.group };
     case ROSTER_ACTIONS.SET_STUDENTS:
       return { ...state, students: action.students };
     case ROSTER_ACTIONS.SET_TEACHERS:

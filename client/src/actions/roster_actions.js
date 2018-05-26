@@ -10,6 +10,11 @@ export const setPseudonym = pseudonym => ({
   pseudonym,
 });
 
+export const setGroup = group => ({
+  type: ROSTER_ACTIONS.SET_GROUP,
+  group,
+});
+
 export const setStudents = students => ({
   type: ROSTER_ACTIONS.SET_STUDENTS,
   students,
