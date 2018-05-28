@@ -12,7 +12,6 @@ import {
   setAuthorizeUri,
   setIsAuthenticated,
 } from '../../client/src/actions/auth_actions';
-import { addItem } from '../../client/src/actions/list_actions';
 import {
   setRole,
   setPseudonym,
@@ -23,17 +22,10 @@ import {
 import App from '../../client/src/app';
 import config from '../config';
 
-
 const router = new Router();
 
 router.get('/', async (req, res) => {
   const store = createStore(reducers);
-
-  store.dispatch(addItem({
-    name: 'middleware',
-    description: `Redux middleware solves different problems than Express or Koa middleware, but in a conceptually similar way.
-    It provides a third-party extension point between dispatching an action, and the moment it reaches the reducer.`,
-  }));
 
   if (req.query.logout) {
     req.session.accessToken = null;
@@ -70,7 +62,7 @@ router.get('/', async (req, res) => {
 
   store.dispatch(setIsAuthenticated(!!accessToken));
 
-  if (req.session.role) {
+  if (req.session.role && accessToken) {
     store.dispatch(setRole(req.session.role));
     store.dispatch(setPseudonym(req.session.pseudonym));
     store.dispatch(setGroup(req.session.group));

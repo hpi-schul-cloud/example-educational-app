@@ -1,16 +1,17 @@
-# Behold the ReactJS + ExpressJS Boilerplate
+# Example Schul-Cloud educational app
+This app written with [ExpressJS], [Redux] and [ReactJS] makes use of the integration mechanisms into the Schul-Cloud. It's based on [tahnik/react-expressjs](https://github.com/tahnik/react-expressjs).
 
-I wrote an [article] about this repo which explains the structure.
-
-This is a boilerplate to use ReactJS, ExpressJS, Redux and React Router v4 in a project.
-
-- [ReactJS] - The state based framework for your Views
-- [React Router v4] - For routing to different paths
-- [Redux] - Redux manages your state
-- [Babel] - The compiler to compile your JS files with es6, es7, JSX syntax to regular javascript
-- [Webpack] - The module binder which takes all your JS files from different directories and compiles them into a single app.bundle.js (you can change the filename of course) so you can include it in a HTML page
-- [ExpressJS] - The node framework to serve your views to the world when they hit the server at example.com or example.com/awesome.html
-
+## Functionalities
+1. Unauthenticated integration with pseudonym transfer: /welcome/{user-id}
+2. OAuth2 authentication: /
+3. LTI authentication (WIP)
+4. Rostering
+    * meta data about course
+    * needs OAuth2
+5. Depseudonymization
+    * Iframe
+    * postMessage and script
+6. LRS feedback (WIP)
 
 # Installation
 
@@ -21,14 +22,14 @@ Just clone this repo or download the zip file. `cd` into the directory and run
     npm install
 
 ## Developing App with [Hot Reload]
-To develop your own react application, you can take advantage of React Hot Loader and Webpack Dev Server. To develop app with hot reload:
+To develop the react application, you can take advantage of React Hot Loader and Webpack Dev Server. To develop app with hot reload:
 
     npm run dev
 
-Now you can access your react application on http://localhost:8080
+Now you can access the react application on http://localhost:8080
 
 ## Production build and Deploy
-To make a production build of your project, run the following commands
+To make a production build of the project, run the following commands
 
     npm run build
   

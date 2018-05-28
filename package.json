@@ -1,7 +1,7 @@
 {
-  "name": "react-expressjs",
+  "name": "example-educational-app",
   "version": "4.0.0",
-  "description": "Boilerplate for ReactJS project with ExpressJS server",
+  "description": "An example app for interactive individual contents for the Schul-Cloud",
   "main": "server/bin/server.js",
   "scripts": {
     "dev": "webpack-dev-server --config webpack/client.dev.js",
@@ -15,18 +15,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/tahnik/react-express-webpack-babel"
+    "url": "git+https://github.com/schul-cloud/example-educational-app"
   },
   "keywords": [
-    "react",
-    "express",
-    "webpack",
-    "babel",
-    "expressjs",
-    "react router v4",
-    "redux"
+    "education"
   ],
-  "author": "Tahnik Mustasin",
+  "author": "Dominik Glandorf",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/tahnik/react-express-webpack-babel/issues"
