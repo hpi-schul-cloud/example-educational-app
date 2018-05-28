@@ -22,28 +22,31 @@ class Play extends Component {
       pseudonym,
       group,
       students,
-      teachers
+      teachers,
     } = this.props;
 
     if (!isAuthenticated) return <Redirect to="/auth" />;
 
     return (
       <div>
-        <h1>Du</h1>
+        <h1>Kurs: {group}</h1>
         <table>
-          <tr><th>Pseudonym</th><th>Depseudonymisiert</th></tr>
-          <tr>
-            <td>{pseudonym}</td>
-            <td>{Play.renderDepseudo(pseudonym)}</td>
-          </tr>
-        </table>
-        <h1>{(role === 'teacher' ? 'Lernende' : 'Mitlernende')}</h1>
-        <table>
-          <tr><th>Pseudonym</th><th>Depseudonymisiert</th></tr>
+          <tr><th /><th>Rolle</th><th>Pseudonym</th><th>Depseudonymisiert</th></tr>
+          {teachers
+          .map(teacher => (
+            <tr>
+              <td>{(pseudonym === teacher.user_id ? <b>Du: </b> : '')}</td>
+              <td>Lehrer</td>
+              <td>{teacher.user_id}</td>
+              <td>{Play.renderDepseudo(teacher.user_id)}</td>
+            </tr>
+          ))
+          }
           {students
-            .filter(student => student.user_id !== pseudonym)
             .map(student => (
               <tr>
+                <td>{(pseudonym === student.user_id ? <b>Du: </b> : '')}</td>
+                <td>Schüler</td>
                 <td>{student.user_id}</td>
                 <td>{Play.renderDepseudo(student.user_id)}</td>
               </tr>

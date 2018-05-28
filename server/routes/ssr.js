@@ -104,7 +104,7 @@ router.get('/', async (req, res) => {
     // save to session
     req.session.pseudonym = sub;
     req.session.role = metadata.data.type;
-    req.session.group = metadata.data.group;
+    req.session.group = groups.data.groups[0].name;
     req.session.students = users.data.students;
     req.session.teachers = users.data.teachers;
   }
