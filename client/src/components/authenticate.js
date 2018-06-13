@@ -4,19 +4,27 @@ import PropTypes from 'prop-types';
 
 
 class Authenticate extends Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {};
+  }
+
   componentDidMount() {
-    const { isAuthenticated } = this.props;
+    const { isAuthenticated, authorizeUri } = this.props;
     if (!isAuthenticated) {
-      window.location = this.props.authorizeUri;
+      window.location.href = authorizeUri;
+    } else {
+      this.setState({ path: localStorage.getItem('redirectTo') || '/' });
+      localStorage.removeItem('redirectTo');
     }
   }
 
   render() {
-    const { isAuthenticated } = this.props;
-    if (isAuthenticated) {
-      return (<Redirect to="/" />);
+    if (this.state.path) {
+      return (<Redirect to={this.state.path} />);
     }
-    return <p>Leite weiter...</p>;
+    return <p>Authentifizieren...</p>;
   }
 }
 

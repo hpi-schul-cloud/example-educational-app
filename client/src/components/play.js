@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
-import { Redirect } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
+import config from '../../../server/config';
+import Secure from '../containers/secure';
 
-const userNameURL = 'https://bp.schul-cloud.org/account/username/';
 
 class Play extends Component {
   static renderDepseudo(pseudonym) {
@@ -10,14 +11,13 @@ class Play extends Component {
       <iframe
         title="username"
         style={{ height: '26px', width: '180px', border: 'none' }}
-        src={`${userNameURL}${pseudonym}`}
+        src={`${config.userNameURL}${pseudonym}`}
       />
     );
   }
 
   render() {
     const {
-      isAuthenticated,
       role,
       pseudonym,
       group,
@@ -25,11 +25,18 @@ class Play extends Component {
       teachers,
     } = this.props;
 
-    if (!isAuthenticated) return <Redirect to="/auth" />;
-
     return (
-      <div>
-        <h1>Kurs: {group}</h1>
+      <Secure>
+        <p>Dein Pseudonym: {pseudonym}</p>
+        <p>Depseudo: {Play.renderDepseudo(pseudonym)}</p>
+        <p>Deine Rolle: {role}</p>
+        <ul>
+          <li><Link to="/chapter/1">Kapitel 1</Link></li>
+          <li><Link to="/chapter/2">Kapitel 2</Link></li>
+          <li><Link to="/chapter/3">Kapitel 3</Link></li>
+        </ul>
+        <h1>Kurs: {group || '-'}</h1>
+        {group &&
         <table>
           <tr><th /><th>Rolle</th><th>Pseudonym</th><th>Depseudonymisiert</th></tr>
           {teachers
@@ -52,25 +59,26 @@ class Play extends Component {
               </tr>
             ))
           }
-        </table>
-      </div>
+        </table>}
+      </Secure>
     );
   }
 }
 
 Play.propTypes = {
-  isAuthenticated: PropTypes.bool.isRequired,
   role: PropTypes.string,
   pseudonym: PropTypes.string,
   group: PropTypes.string,
-  students: PropTypes.array.isRequired,
-  teachers: PropTypes.array.isRequired,
+  students: PropTypes.array,
+  teachers: PropTypes.array,
 };
 
 Play.defaultProps = {
-  role: null,
-  pseudonym: null,
-  group: null,
+  role: undefined,
+  pseudonym: undefined,
+  group: undefined,
+  students: undefined,
+  teachers: undefined,
 };
 
 export default Play;

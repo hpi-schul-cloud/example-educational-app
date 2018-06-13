@@ -11,6 +11,7 @@ import reducers from '../../client/src/reducers/index';
 import {
   setAuthorizeUri,
   setIsAuthenticated,
+  setIsEditable,
 } from '../../client/src/actions/auth_actions';
 import {
   setRole,
@@ -36,7 +37,7 @@ router.get('/', async (req, res) => {
   const authorizationUri = oauth.authorizationCode.authorizeURL({
     redirect_uri: 'http://localhost:3000/auth',
     scope: 'openid',
-    state: 'blablablabla',
+    state: JSON.stringify({ isEditable: (req.query.edit === '1') }), // misusing the state
   });
   store.dispatch(setAuthorizeUri(authorizationUri));
 
@@ -46,6 +47,8 @@ router.get('/', async (req, res) => {
       code: req.query.code,
       redirect_uri: 'http://localhost:3000/auth',
     };
+    const state = JSON.parse(req.query.state)
+    store.dispatch(setIsEditable(state.isEditable));
 
     try {
       const result = await oauth.authorizationCode.getToken(tokenConfig);
@@ -55,11 +58,7 @@ router.get('/', async (req, res) => {
     }
   }
 
-  const accessToken = (req.session.accessToken
-    ? req.session.accessToken
-    : null
-  );
-
+  const accessToken = req.session.accessToken || undefined;
   store.dispatch(setIsAuthenticated(!!accessToken));
 
   if (req.session.role && accessToken) {
@@ -71,34 +70,37 @@ router.get('/', async (req, res) => {
   } else if (accessToken) {
     const { sub } = jwt.decode(accessToken.token.id_token);
     store.dispatch(setPseudonym(sub));
-    // console.log(accessToken.token.access_token);
     const responseMetadata = await fetch(
       `https://bp.schul-cloud.org:3031/provider/users/${sub}/metadata`,
       { headers: { Authorization: accessToken.token.access_token } },
     );
     const metadata = await responseMetadata.json();
     store.dispatch(setRole(metadata.data.type));
+    // save to session
+    req.session.pseudonym = sub;
+    req.session.role = metadata.data.type;
+
     const responseGroups = await fetch(
       `https://bp.schul-cloud.org:3031/provider/users/${sub}/groups`,
       { headers: { Authorization: accessToken.token.access_token } },
     );
     const groups = await responseGroups.json();
-    store.dispatch(setGroup(groups.data.groups[0].name));
-    const responseUsers = await fetch(
-      `https://bp.schul-cloud.org:3031/provider/groups/${groups.data.groups[0].group_id}`,
-      { headers: { Authorization: accessToken.token.access_token } },
-    );
 
-    const users = await responseUsers.json();
-    store.dispatch(setStudents(users.data.students));
-    store.dispatch(setTeachers(users.data.teachers));
+    if (groups.data.groups.length) { // part of a group
+      store.dispatch(setGroup(groups.data.groups[0].name));
+      const responseUsers = await fetch(
+        `https://bp.schul-cloud.org:3031/provider/groups/${groups.data.groups[0].group_id}`,
+        { headers: { Authorization: accessToken.token.access_token } },
+      );
 
-    // save to session
-    req.session.pseudonym = sub;
-    req.session.role = metadata.data.type;
-    req.session.group = groups.data.groups[0].name;
-    req.session.students = users.data.students;
-    req.session.teachers = users.data.teachers;
+      const users = await responseUsers.json();
+      store.dispatch(setStudents(users.data.students));
+      store.dispatch(setTeachers(users.data.teachers));
+
+      req.session.group = groups.data.groups[0].name;
+      req.session.students = users.data.students;
+      req.session.teachers = users.data.teachers;
+    }
   }
 
   const context = {};
@@ -115,7 +117,6 @@ router.get('/', async (req, res) => {
   );
 
   const finalState = store.getState();
-  // console.log('finalState', finalState);
 
   if (context.url) {
     res.writeHead(301, {

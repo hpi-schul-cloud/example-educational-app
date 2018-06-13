@@ -9,6 +9,8 @@ export default (state = AUTH, action) => {
       return { ...state, accessToken: action.accessToken };
     case AUTH_ACTIONS.AUTHORIZE_URI_SET:
       return { ...state, authorizeUri: action.uri };
+    case AUTH_ACTIONS.SET_IS_EDITABLE:
+      return { ...state, isEditable: action.isEditable };
     default:
       return state;
   }

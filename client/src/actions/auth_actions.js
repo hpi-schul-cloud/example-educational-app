@@ -14,3 +14,8 @@ export const setAuthorizeUri = uri => ({
   type: AUTH_ACTIONS.AUTHORIZE_URI_SET,
   uri,
 });
+
+export const setIsEditable = isEditable => ({
+  type: AUTH_ACTIONS.SET_IS_EDITABLE,
+  isEditable,
+});

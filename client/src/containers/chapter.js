@@ -1,5 +1,5 @@
 import { connect } from 'react-redux';
-import Play from '../components/play';
+import Chapter from '../components/chapter';
 
 /*
 This is a redux specific function.
@@ -8,6 +8,8 @@ For example, here we are retrieving the list of items from the redux store.
 Whenever this list changes, any component that is using this list of item will re-render.
  */
 const mapStateToProps = state => ({
+  isAuthenticated: state.auth.isAuthenticated,
+  isEditable: state.auth.isEditable,
   role: state.roster.role,
   pseudonym: state.roster.pseudonym,
   group: state.roster.group,
@@ -28,4 +30,4 @@ const mapDispatchToProps = dispatch => ({
 Here we are creating a Higher order component
 https://facebook.github.io/react/docs/higher-order-components.html
  */
-export default connect(mapStateToProps, mapDispatchToProps)(Play);
+export default connect(mapStateToProps, mapDispatchToProps)(Chapter);

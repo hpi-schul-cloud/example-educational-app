@@ -10,6 +10,7 @@ const config = {
       authorizePath: '/hydra/oauth2/auth',
     },
   },
+  userNameURL: 'https://bp.schul-cloud.org/account/username/',
 };
 
 export default config;
