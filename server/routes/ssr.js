@@ -46,8 +46,9 @@ router.get('/', async (req, res) => {
     const tokenConfig = {
       code: req.query.code,
       redirect_uri: 'http://localhost:3000/auth',
+      scope: 'openid',
     };
-    const state = JSON.parse(req.query.state)
+    const state = JSON.parse(req.query.state);
     store.dispatch(setIsEditable(state.isEditable));
 
     try {
@@ -71,7 +72,7 @@ router.get('/', async (req, res) => {
     const { sub } = jwt.decode(accessToken.token.id_token);
     store.dispatch(setPseudonym(sub));
     const responseMetadata = await fetch(
-      `https://bp.schul-cloud.org:3031/provider/users/${sub}/metadata`,
+      `${config.scHost}roster/users/${encodeURIComponent(sub)}/metadata`,
       { headers: { Authorization: accessToken.token.access_token } },
     );
     const metadata = await responseMetadata.json();
@@ -81,7 +82,7 @@ router.get('/', async (req, res) => {
     req.session.role = metadata.data.type;
 
     const responseGroups = await fetch(
-      `https://bp.schul-cloud.org:3031/provider/users/${sub}/groups`,
+      `${config.scHost}roster/users/${sub}/groups`,
       { headers: { Authorization: accessToken.token.access_token } },
     );
     const groups = await responseGroups.json();
