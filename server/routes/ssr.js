@@ -82,7 +82,7 @@ router.get('/', async (req, res) => {
     req.session.role = metadata.data.type;
 
     const responseGroups = await fetch(
-      `${config.scHost}roster/users/${sub}/groups`,
+      `${config.scHost}roster/users/${encodeURIComponent(sub)}/groups`,
       { headers: { Authorization: accessToken.token.access_token } },
     );
     const groups = await responseGroups.json();
@@ -90,7 +90,7 @@ router.get('/', async (req, res) => {
     if (groups.data.groups.length) { // part of a group
       store.dispatch(setGroup(groups.data.groups[0].name));
       const responseUsers = await fetch(
-        `https://bp.schul-cloud.org:3031/provider/groups/${groups.data.groups[0].group_id}`,
+        `${config.scHost}roster/groups/${groups.data.groups[0].group_id}`,
         { headers: { Authorization: accessToken.token.access_token } },
       );
 

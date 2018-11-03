@@ -6,16 +6,6 @@ import Secure from '../containers/secure';
 
 
 class Play extends Component {
-  static renderDepseudo(pseudonym) {
-    return (
-      <iframe
-        title="username"
-        style={{ height: '26px', width: '180px', border: 'none' }}
-        src={`${config.userNameURL}${pseudonym}`}
-      />
-    );
-  }
-
   render() {
     const {
       role,
@@ -27,8 +17,8 @@ class Play extends Component {
 
     return (
       <Secure>
-        <p>Dein Pseudonym: {pseudonym}</p>
-        <p>Depseudo: {Play.renderDepseudo(pseudonym)}</p>
+        <p>Dein Name lautet:</p>
+        <div dangerouslySetInnerHTML={{ __html: pseudonym }} />
         <p>Deine Rolle: {role}</p>
         <ul>
           <li><Link to="/chapter/1">Kapitel 1</Link></li>
@@ -38,26 +28,26 @@ class Play extends Component {
         <h1>Kurs: {group || '-'}</h1>
         {group &&
         <table>
-          <tr><th /><th>Rolle</th><th>Pseudonym</th><th>Depseudonymisiert</th></tr>
+          <tr><th /><th>Rolle</th><th>Name</th><th>Depseudonymisiert</th></tr>
           {teachers
           .map(teacher => (
-            <tr>
-              <td>{(pseudonym === teacher.user_id ? <b>Du: </b> : '')}</td>
-              <td>Lehrer</td>
-              <td>{teacher.user_id}</td>
-              <td>{Play.renderDepseudo(teacher.user_id)}</td>
-            </tr>
+              <tr>
+                <td>{(pseudonym === teacher.user_id ? <b>Du: </b> : '')}</td>
+                <td>Lehrer</td>
+                <td><div dangerouslySetInnerHTML={{ __html: teacher.user_id }} /></td>
+                <td>-</td>
+              </tr>
           ))
           }
           {students
-            .map(student => (
+          .map(student => (
               <tr>
                 <td>{(pseudonym === student.user_id ? <b>Du: </b> : '')}</td>
                 <td>Schüler</td>
                 <td>{student.user_id}</td>
-                <td>{Play.renderDepseudo(student.user_id)}</td>
+                <td><div dangerouslySetInnerHTML={{ __html: student.user_id }} /></td>
               </tr>
-            ))
+          ))
           }
         </table>}
       </Secure>
