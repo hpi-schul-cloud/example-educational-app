@@ -17,26 +17,29 @@ class Play extends Component {
 
     return (
       <Secure>
+        <h1>Pseudonymisierung</h1>
         <p>Dein Name lautet:</p>
         <div dangerouslySetInnerHTML={{ __html: pseudonym }} />
+        <p>Dein Pseudonym: {pseudonym}</p>
         <p>Deine Rolle: {role}</p>
+        <h1>Inhalte</h1>
         <ul>
           <li><Link to="/chapter/1">Kapitel 1</Link></li>
           <li><Link to="/chapter/2">Kapitel 2</Link></li>
           <li><Link to="/chapter/3">Kapitel 3</Link></li>
         </ul>
-        <h1>Kurs: {group || '-'}</h1>
+        <h1>Kurs</h1>
+        <p>Der Kursname lautet {group || '-'} und umfasst folgende Benutzer</p>
         {group &&
         <table>
-          <tr><th /><th>Rolle</th><th>Name</th><th>Depseudonymisiert</th></tr>
+          <tr><th /><th>Rolle</th><th>Name</th></tr>
           {teachers
           .map(teacher => (
-              <tr>
-                <td>{(pseudonym === teacher.user_id ? <b>Du: </b> : '')}</td>
-                <td>Lehrer</td>
-                <td><div dangerouslySetInnerHTML={{ __html: teacher.user_id }} /></td>
-                <td>-</td>
-              </tr>
+            <tr>
+              <td>{(pseudonym === teacher.user_id ? <b>Du: </b> : '')}</td>
+              <td>Lehrer</td>
+              <td><div dangerouslySetInnerHTML={{ __html: teacher.user_id }} /></td>
+            </tr>
           ))
           }
           {students
@@ -44,7 +47,6 @@ class Play extends Component {
               <tr>
                 <td>{(pseudonym === student.user_id ? <b>Du: </b> : '')}</td>
                 <td>Schüler</td>
-                <td>{student.user_id}</td>
                 <td><div dangerouslySetInnerHTML={{ __html: student.user_id }} /></td>
               </tr>
           ))

@@ -10,6 +10,7 @@ const config = {
       authorizePath: '/hydra/oauth2/auth',
     },
   },
+  redirectUrl: 'http://localhost:3001/auth',
   scHost: 'http://localhost:3030/',
 };
 

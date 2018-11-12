@@ -35,7 +35,7 @@ router.get('/', async (req, res) => {
   // generate OAuth2 auth URI for redirection
   const oauth = oauth2.create(config.credentials);
   const authorizationUri = oauth.authorizationCode.authorizeURL({
-    redirect_uri: 'http://localhost:3000/auth',
+    redirect_uri: config.redirectUrl,
     scope: 'openid',
     state: JSON.stringify({ isEditable: (req.query.edit === '1') }), // misusing the state
   });
@@ -45,7 +45,7 @@ router.get('/', async (req, res) => {
   if (req.query.code) {
     const tokenConfig = {
       code: req.query.code,
-      redirect_uri: 'http://localhost:3000/auth',
+      redirect_uri: config.redirectUrl,
       scope: 'openid',
     };
     const state = JSON.parse(req.query.state);
