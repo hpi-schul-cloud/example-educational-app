@@ -1,4 +1,7 @@
 # Example Schul-Cloud educational app
+
+[![Greenkeeper badge](https://badges.greenkeeper.io/schul-cloud/example-educational-app.svg)](https://greenkeeper.io/)
+
 This app written with [ExpressJS], [Redux] and [ReactJS] makes use of the integration mechanisms into the Schul-Cloud. It's based on [tahnik/react-expressjs](https://github.com/tahnik/react-expressjs).
 
 ## Functionalities
