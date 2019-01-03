@@ -6,7 +6,6 @@ import { StaticRouter } from 'react-router';
 import oauth2 from 'simple-oauth2';
 import Router from 'express-promise-router';
 import fetch from 'isomorphic-fetch';
-import jwt from 'jsonwebtoken';
 import reducers from '../../client/src/reducers/index';
 import {
   setAuthorizeUri,
@@ -69,20 +68,24 @@ router.get('/', async (req, res) => {
     store.dispatch(setStudents(req.session.students));
     store.dispatch(setTeachers(req.session.teachers));
   } else if (accessToken) {
-    const { sub } = jwt.decode(accessToken.token.id_token);
-    store.dispatch(setPseudonym(sub));
+    const responseUserinfo = await fetch(
+        `${config.credentials.auth.tokenHost}/userinfo`,
+        { headers: { Authorization: 'Bearer ' + accessToken.token.access_token } },
+    );
+    const userinfo = await responseUserinfo.json();
+    store.dispatch(setPseudonym(userinfo.sub));
     const responseMetadata = await fetch(
-      `${config.scHost}roster/users/${encodeURIComponent(sub)}/metadata`,
+      `${config.scHost}roster/users/${encodeURIComponent(userinfo.sub)}/metadata`,
       { headers: { Authorization: accessToken.token.access_token } },
     );
     const metadata = await responseMetadata.json();
     store.dispatch(setRole(metadata.data.type));
     // save to session
-    req.session.pseudonym = sub;
+    req.session.pseudonym = userinfo.sub;
     req.session.role = metadata.data.type;
 
     const responseGroups = await fetch(
-      `${config.scHost}roster/users/${encodeURIComponent(sub)}/groups`,
+      `${config.scHost}roster/users/${encodeURIComponent(userinfo.sub)}/groups`,
       { headers: { Authorization: accessToken.token.access_token } },
     );
     const groups = await responseGroups.json();

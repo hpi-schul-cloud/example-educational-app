@@ -3,3 +3,6 @@ node_modules
 **/bin
 **/public
 /.idea
+/server/cert.pem
+/server/key.pem
+/server/config.js
