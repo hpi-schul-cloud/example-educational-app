@@ -69,7 +69,7 @@ router.get('/', async (req, res) => {
     store.dispatch(setTeachers(req.session.teachers));
   } else if (accessToken) {
     const responseUserinfo = await fetch(
-        `${config.credentials.auth.tokenHost}/userinfo`,
+        `${config.credentials.auth.tokenHost}${config.userinfoPath}`,
         { headers: { Authorization: 'Bearer ' + accessToken.token.access_token } },
     );
     const userinfo = await responseUserinfo.json();
