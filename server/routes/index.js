@@ -1,5 +1,6 @@
 import express from 'express';
 import session from 'express-session';
+const bodyParser = require('body-parser');
 import fs from 'fs';
 import https from 'https';
 import ssr from './ssr';
@@ -10,6 +11,9 @@ app.set('view engine', 'ejs');
 
 app.use(express.static('public'));
 
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
+
 app.use(session({
   secret: 'keyboard cat',
   cookie: {},
@@ -17,7 +21,7 @@ app.use(session({
   saveUninitialized: false,
 }));
 
-app.use('/*', ssr);
+app.use(ssr);
 
 const key = fs.readFileSync('./key.pem');
 const cert = fs.readFileSync('./cert.pem')

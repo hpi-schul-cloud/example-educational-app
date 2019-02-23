@@ -4,6 +4,7 @@ import { createStore } from 'redux';
 import { Provider } from 'react-redux';
 import { StaticRouter } from 'react-router';
 import oauth2 from 'simple-oauth2';
+import jwt from 'jsonwebtoken';
 import Router from 'express-promise-router';
 import fetch from 'isomorphic-fetch';
 import reducers from '../../client/src/reducers/index';
@@ -24,7 +25,63 @@ import config from '../config';
 
 const router = new Router();
 
-router.get('/', async (req, res) => {
+router.post('/launches', async (req, res) => {
+  const store = createStore(reducers);
+
+  try {
+
+    const id_token = jwt.verify(req.body.id_token,
+        config.platform.publicKey,
+        { algorithm: 'RS256'});
+
+    if (id_token.iss !== config.platform.issuer) {
+      throw new Error('Issuer not matching');
+    }
+
+    if (id_token.aud !== config.credentials.client.id) {
+      throw new Error('Audition not matching');
+    }
+
+    // TODO: iat, exp and nonce check
+
+    // console.log(id_token);
+    store.dispatch(setPseudonym(id_token.sub));
+    store.dispatch(setRole(id_token['https://purl.imsglobal.org/spec/lti/claim/roles'][0]));
+
+  } catch(ex) {
+    console.log('Error: ', ex)
+  }
+
+  const context = {};
+
+  const html = ReactDOMServer.renderToString(
+      <Provider store={store}>
+        <StaticRouter
+            location={req.originalUrl}
+            context={context}
+        >
+          <App />
+        </StaticRouter>
+      </Provider>,
+  );
+
+  const finalState = store.getState();
+
+  if (context.url) {
+    res.writeHead(301, {
+      Location: context.url,
+    });
+    res.end();
+  } else {
+    res.status(200).render('../views/index.ejs', {
+      html,
+      script: JSON.stringify(finalState),
+    });
+  }
+});
+
+router.get('/*', async (req, res) => {
+
   const store = createStore(reducers);
 
   if (req.query.logout) {

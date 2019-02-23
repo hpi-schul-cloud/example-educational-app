@@ -27,6 +27,7 @@
   },
   "homepage": "https://github.com/tahnik/react-express-webpack-babel#readme",
   "dependencies": {
+    "body-parser": "^1.18.3",
     "cross-env": "^5.1.4",
     "ejs": "^2.5.9",
     "express": "^4.16.3",
@@ -35,7 +36,7 @@
     "fs": "0.0.1-security",
     "https": "^1.0.0",
     "isomorphic-fetch": "^2.2.1",
-    "jsonwebtoken": "^8.2.1",
+    "jsonwebtoken": "^8.5.0",
     "npm": "^6.0.0",
     "prop-types": "^15.6.1",
     "react": "^16.3.2",

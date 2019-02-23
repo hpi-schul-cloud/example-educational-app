@@ -7,23 +7,29 @@ class Welcome extends Component {
 
   }
   render() {
-    const { match } = this.props;
+    const {
+      role,
+      pseudonym
+    } = this.props;
 
-    const { userId } = match.params;
     return (
       <div>
         <p>Hey, pseudonymisierter Mensch</p>
-        <p>Wir kennen dich als: {userId}</p>
-        <p>Unpseudonymisiert heißt du wohl: {Play.renderDepseudo(userId)}</p>
-        <p>Ein fremder Schüler heißt {Play.renderDepseudo('6c4a44bf-e5d4-41ca-80ae-9b68d5cee563')}</p>
-        <p>Viel Spaß beim Lernen!</p>
+        <p>Wir kennen dich als: {pseudonym}</p>
+        <p>Deine Rolle ist {role}!</p>
       </div>
     );
   }
 }
 
 Welcome.propTypes = {
-  match: PropTypes.object.isRequired,
+  role: PropTypes.string,
+  pseudonym: PropTypes.string,
+};
+
+Welcome.defaultProps = {
+  role: undefined,
+  pseudonym: undefined,
 };
 
 export default Welcome;
