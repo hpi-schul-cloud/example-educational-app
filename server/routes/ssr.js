@@ -29,40 +29,44 @@ router.post('/launches', async (req, res) => {
   const store = createStore(reducers);
 
   try {
+    // checking integrity, signature and expiration time
+    const idToken = jwt.verify(req.body.id_token,
+      config.platform.publicKey,
+      { algorithm: 'RS256' });
 
-    const id_token = jwt.verify(req.body.id_token,
-        config.platform.publicKey,
-        { algorithm: 'RS256'});
-
-    if (id_token.iss !== config.platform.issuer) {
+    console.log(idToken);
+    if (idToken.iss !== config.platform.issuer) {
       throw new Error('Issuer not matching');
     }
 
-    if (id_token.aud !== config.credentials.client.id) {
+    if (idToken.aud !== config.credentials.client.id) {
       throw new Error('Audition not matching');
     }
 
-    // TODO: iat, exp and nonce check
+    // TODO: iat, and nonce check
 
     // console.log(id_token);
-    store.dispatch(setPseudonym(id_token.sub));
-    store.dispatch(setRole(id_token['https://purl.imsglobal.org/spec/lti/claim/roles'][0]));
-
-  } catch(ex) {
-    console.log('Error: ', ex)
+    store.dispatch(setPseudonym(idToken.sub));
+    store.dispatch(setRole(idToken['https://purl.imsglobal.org/spec/lti/claim/roles'][0]));
+    store.dispatch(setIsEditable(
+      (idToken['https://purl.imsglobal.org/spec/lti/claim/message_type'] ===
+      'LtiDeepLinkingRequest'),
+    ));
+  } catch (ex) {
+    console.log('Error: ', ex);
   }
 
   const context = {};
 
   const html = ReactDOMServer.renderToString(
-      <Provider store={store}>
-        <StaticRouter
-            location={req.originalUrl}
-            context={context}
-        >
-          <App />
-        </StaticRouter>
-      </Provider>,
+    <Provider store={store}>
+      <StaticRouter
+        location={req.originalUrl}
+        context={context}
+      >
+        <App />
+      </StaticRouter>
+    </Provider>,
   );
 
   const finalState = store.getState();

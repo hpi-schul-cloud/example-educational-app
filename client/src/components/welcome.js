@@ -9,7 +9,8 @@ class Welcome extends Component {
   render() {
     const {
       role,
-      pseudonym
+      pseudonym,
+      isEditable
     } = this.props;
 
     return (
@@ -17,6 +18,7 @@ class Welcome extends Component {
         <p>Hey, pseudonymisierter Mensch</p>
         <p>Wir kennen dich als: {pseudonym}</p>
         <p>Deine Rolle ist {role}!</p>
+        {isEditable && <p>Bitte wähle den zu verlinkenden Inhalt aus</p>}
       </div>
     );
   }
@@ -25,11 +27,13 @@ class Welcome extends Component {
 Welcome.propTypes = {
   role: PropTypes.string,
   pseudonym: PropTypes.string,
+  isEditable: PropTypes.bool,
 };
 
 Welcome.defaultProps = {
   role: undefined,
   pseudonym: undefined,
+  isEditable: false,
 };
 
 export default Welcome;

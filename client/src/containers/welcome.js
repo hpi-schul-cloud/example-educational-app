@@ -10,6 +10,7 @@ Whenever this list changes, any component that is using this list of item will r
 const mapStateToProps = state => ({
   role: state.roster.role,
   pseudonym: state.roster.pseudonym,
+  isEditable: state.auth.isEditable,
 });
 
 /*
