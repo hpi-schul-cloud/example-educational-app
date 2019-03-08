@@ -17,11 +17,24 @@ class Chapter extends Component {
     }
   }
 
-  static sendUrl() {
-    window.parent.postMessage({
-      url: window.location.href,
-      windowName: window.name,
-    }, '*');
+  constructor() {
+    super();
+    this.deepLink = this.deepLink.bind(this);
+  }
+
+  deepLink() {
+    if (this.props.authorizeUri) {
+      window.parent.postMessage({
+        url: window.location.href,
+        windowName: window.name,
+      }, '*');
+    } else { // LTI 1.3
+      const req = this.props.ltiRequest;
+      const dls = 'https://purl.imsglobal.org/spec/lti-dl/claim/deep_linking_settings';
+      const returnUri = encodeURI(req[dls].deep_link_return_url);
+      window.location.href = `/deeplink?return_uri=${returnUri}&
+      deployment_id=${req.deployment_id}`;
+    }
   }
 
   render() {
@@ -39,9 +52,7 @@ class Chapter extends Component {
           <h1>Kapitel {number}</h1>
           <p>{Chapter.getText(number)}</p>
           {isEditable &&
-          <button onClick={Chapter.sendUrl}>Dieses Kapitel im Arbeitsblatt
-            benutzen
-          </button>}
+          <button onClick={this.deepLink}>Dieses Kapitel benutzen</button>}
         </div>
       </Secure>
     );
@@ -51,6 +62,13 @@ class Chapter extends Component {
 Chapter.propTypes = {
   match: PropTypes.object.isRequired,
   isEditable: PropTypes.bool.isRequired,
+  authorizeUri: PropTypes.string,
+  ltiRequest: PropTypes.object,
+};
+
+Chapter.defaultProps = {
+  authorizeUri: null,
+  ltiRequest: null,
 };
 
 export default Chapter;

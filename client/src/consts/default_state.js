@@ -1,8 +1,9 @@
 export const AUTH = {
   isAuthenticated: false,
   accessToken: null,
-  authorizeUri: '',
+  authorizeUri: null,
   isEditable: false,
+  ltiRequest: null,
 };
 
 export const ROSTER = {

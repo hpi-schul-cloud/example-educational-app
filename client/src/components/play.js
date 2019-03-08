@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import config from '../../../server/config';
 import Secure from '../containers/secure';
 
 

@@ -5,6 +5,7 @@ import { Provider } from 'react-redux';
 import { StaticRouter } from 'react-router';
 import oauth2 from 'simple-oauth2';
 import jwt from 'jsonwebtoken';
+import fs from 'fs';
 import Router from 'express-promise-router';
 import fetch from 'isomorphic-fetch';
 import reducers from '../../client/src/reducers/index';
@@ -12,6 +13,7 @@ import {
   setAuthorizeUri,
   setIsAuthenticated,
   setIsEditable,
+  setLtiRequest,
 } from '../../client/src/actions/auth_actions';
 import {
   setRole,
@@ -24,6 +26,15 @@ import App from '../../client/src/app';
 import config from '../config';
 
 const router = new Router();
+
+const generateNonce = (length) => {
+  let text = '';
+  const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  for (let i = 0; i < length; i += 1) {
+    text += possible.charAt(Math.floor(Math.random() * possible.length));
+  }
+  return text;
+};
 
 router.post('/launches', async (req, res) => {
   const store = createStore(reducers);
@@ -46,12 +57,16 @@ router.post('/launches', async (req, res) => {
     // TODO: iat, and nonce check
 
     // console.log(id_token);
+    store.dispatch(setIsAuthenticated(true));
     store.dispatch(setPseudonym(idToken.sub));
     store.dispatch(setRole(idToken['https://purl.imsglobal.org/spec/lti/claim/roles'][0]));
-    store.dispatch(setIsEditable(
-      (idToken['https://purl.imsglobal.org/spec/lti/claim/message_type'] ===
-      'LtiDeepLinkingRequest'),
-    ));
+    if (idToken['https://purl.imsglobal.org/spec/lti/claim/message_type'] ===
+        'LtiDeepLinkingRequest') {
+      store.dispatch(setIsEditable(true));
+      store.dispatch(setLtiRequest(idToken));
+    }
+
+
   } catch (ex) {
     console.log('Error: ', ex);
   }
@@ -82,6 +97,32 @@ router.post('/launches', async (req, res) => {
       script: JSON.stringify(finalState),
     });
   }
+});
+
+router.get('/deeplink', async (req, res) => {
+  const current = new Date();
+  console.log(req.query);
+  const idToken = {
+    iss: process.env.FRONTEND_URL || 'http://localhost:3000/',
+    aud: config.platform.audience,
+    sub: '',
+    exp: current.getTime() + (3 * 60),
+    iat: current.getTime(),
+    nonce: generateNonce(16),
+    'https://purl.imsglobal.org/spec/lti/claim/message_type': 'LtiDeepLinkingResponse',
+    'https://purl.imsglobal.org/spec/lti/claim/version': '1.3.0',
+    'https://purl.imsglobal.org/spec/lti/claim/deployment_id': req.query.deployment_id,
+    'https://purl.imsglobal.org/spec/lti-dl/claim/content_items': {
+
+    },
+  };
+  console.log(idToken);
+  const value = jwt.sign(idToken, fs.readFileSync('private_key.pem'), { algorithm: 'RS256' });
+  console.log(value);
+  res.status(200).render('../views/lti.ejs', {
+    url: req.query.return_uri,
+    value,
+  });
 });
 
 router.get('/*', async (req, res) => {
@@ -130,8 +171,8 @@ router.get('/*', async (req, res) => {
     store.dispatch(setTeachers(req.session.teachers));
   } else if (accessToken) {
     const responseUserinfo = await fetch(
-        `${config.credentials.auth.tokenHost}${config.userinfoPath}`,
-        { headers: { Authorization: 'Bearer ' + accessToken.token.access_token } },
+      `${config.credentials.auth.tokenHost}${config.userinfoPath}`,
+      { headers: { Authorization: 'Bearer ' + accessToken.token.access_token } },
     );
     const userinfo = await responseUserinfo.json();
     store.dispatch(setPseudonym(userinfo.sub));

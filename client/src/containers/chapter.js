@@ -10,6 +10,7 @@ Whenever this list changes, any component that is using this list of item will r
 const mapStateToProps = state => ({
   isAuthenticated: state.auth.isAuthenticated,
   isEditable: state.auth.isEditable,
+  ltiRequest: state.auth.ltiRequest,
   role: state.roster.role,
   pseudonym: state.roster.pseudonym,
   group: state.roster.group,

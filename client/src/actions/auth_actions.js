@@ -19,3 +19,8 @@ export const setIsEditable = isEditable => ({
   type: AUTH_ACTIONS.SET_IS_EDITABLE,
   isEditable,
 });
+
+export const setLtiRequest = request => ({
+  type: AUTH_ACTIONS.SET_LTI_REQUEST,
+  request,
+});

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import Play from './play';
+import { Link } from 'react-router-dom';
 
 class Welcome extends Component {
   componentDidMount() {
@@ -10,7 +10,7 @@ class Welcome extends Component {
     const {
       role,
       pseudonym,
-      isEditable
+      isEditable,
     } = this.props;
 
     return (
@@ -19,6 +19,12 @@ class Welcome extends Component {
         <p>Wir kennen dich als: {pseudonym}</p>
         <p>Deine Rolle ist {role}!</p>
         {isEditable && <p>Bitte wähle den zu verlinkenden Inhalt aus</p>}
+        <h1>Inhalte</h1>
+        <ul>
+          <li><Link to="/chapter/1">Kapitel 1</Link></li>
+          <li><Link to="/chapter/2">Kapitel 2</Link></li>
+          <li><Link to="/chapter/3">Kapitel 3</Link></li>
+        </ul>
       </div>
     );
   }
