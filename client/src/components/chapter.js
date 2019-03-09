@@ -23,7 +23,7 @@ class Chapter extends Component {
   }
 
   deepLink() {
-    if (this.props.authorizeUri) {
+    if (this.props.authorizeUri) { // OAuth2
       window.parent.postMessage({
         url: window.location.href,
         windowName: window.name,
@@ -31,9 +31,11 @@ class Chapter extends Component {
     } else { // LTI 1.3
       const req = this.props.ltiRequest;
       const dls = 'https://purl.imsglobal.org/spec/lti-dl/claim/deep_linking_settings';
-      const returnUri = encodeURI(req[dls].deep_link_return_url);
-      window.location.href = `/deeplink?return_uri=${returnUri}&
-      deployment_id=${req.deployment_id}`;
+      const returnUrl = encodeURI(req[dls].deep_link_return_url);
+      const linkUrl = encodeURI(window.location.href);
+      const title = encodeURI(`Example Kapitel ${this.props.match.params.number}`);
+      window.location.href = `/deeplink?return_url=${returnUrl}&
+      deployment_id=${req.deployment_id}&link_url=${linkUrl}&title=${title}`;
     }
   }
 

@@ -1,17 +1,19 @@
 # Example Schul-Cloud educational app
-This app written with [ExpressJS], [Redux] and [ReactJS] makes use of the integration mechanisms into the Schul-Cloud. It's based on [tahnik/react-expressjs](https://github.com/tahnik/react-expressjs).
+This app written with [ExpressJS], [Redux] and [ReactJS] makes use of the educational resource integration mechanisms into the Schul-Cloud. It's based on [tahnik/react-expressjs](https://github.com/tahnik/react-expressjs).
 
-## Functionalities
-1. Unauthenticated integration with pseudonym transfer: /welcome/{user-id}
-2. OAuth2 authentication: /
-3. LTI authentication (WIP)
-4. Rostering
-    * meta data about course
-    * needs OAuth2
-5. Depseudonymization
-    * Iframe
-    * postMessage and script
+## Functionality
+1. OAuth2 authentication: GET /
+2. LTI authentication: POST /launches
+3. Roster via OAuth2
+4. Deep Linking
+5. Depseudonymization via Iframe
 6. LRS feedback (WIP)
+
+# Configuration
+
+Copy `example.config.js` to `config.js` and put in the right values.
+
+Create a SSH key pair and save the private key in `server/private_key.pem`.
 
 # Installation
 

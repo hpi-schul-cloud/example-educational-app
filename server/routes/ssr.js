@@ -36,39 +36,31 @@ const generateNonce = (length) => {
   return text;
 };
 
-router.post('/launches', async (req, res) => {
+router.post('*', async (req, res) => {
   const store = createStore(reducers);
 
-  try {
-    // checking integrity, signature and expiration time
-    const idToken = jwt.verify(req.body.id_token,
-      config.platform.publicKey,
-      { algorithm: 'RS256' });
+  // checking integrity, signature and expiration time
+  const idToken = jwt.verify(req.body.id_token,
+    config.platform.publicKey,
+    { algorithm: 'RS256' });
 
-    console.log(idToken);
-    if (idToken.iss !== config.platform.issuer) {
-      throw new Error('Issuer not matching');
-    }
+  if (idToken.iss !== config.platform.url) {
+    throw new Error('Issuer not matching');
+  }
 
-    if (idToken.aud !== config.credentials.client.id) {
-      throw new Error('Audition not matching');
-    }
+  if (idToken.aud !== config.credentials.client.id) {
+    throw new Error('Audience not matching');
+  }
 
-    // TODO: iat, and nonce check
+  // TODO: iat, and nonce check
 
-    // console.log(id_token);
-    store.dispatch(setIsAuthenticated(true));
-    store.dispatch(setPseudonym(idToken.sub));
-    store.dispatch(setRole(idToken['https://purl.imsglobal.org/spec/lti/claim/roles'][0]));
-    if (idToken['https://purl.imsglobal.org/spec/lti/claim/message_type'] ===
-        'LtiDeepLinkingRequest') {
-      store.dispatch(setIsEditable(true));
-      store.dispatch(setLtiRequest(idToken));
-    }
-
-
-  } catch (ex) {
-    console.log('Error: ', ex);
+  store.dispatch(setIsAuthenticated(true));
+  store.dispatch(setPseudonym(idToken.sub));
+  store.dispatch(setRole(idToken['https://purl.imsglobal.org/spec/lti/claim/roles'][0]));
+  if (idToken['https://purl.imsglobal.org/spec/lti/claim/message_type'] ===
+      'LtiDeepLinkingRequest') {
+    store.dispatch(setIsEditable(true));
+    store.dispatch(setLtiRequest(idToken));
   }
 
   const context = {};
@@ -101,10 +93,9 @@ router.post('/launches', async (req, res) => {
 
 router.get('/deeplink', async (req, res) => {
   const current = new Date();
-  console.log(req.query);
   const idToken = {
-    iss: process.env.FRONTEND_URL || 'http://localhost:3000/',
-    aud: config.platform.audience,
+    iss: config.credentials.client.id,
+    aud: config.platform.url,
     sub: '',
     exp: current.getTime() + (3 * 60),
     iat: current.getTime(),
@@ -113,15 +104,15 @@ router.get('/deeplink', async (req, res) => {
     'https://purl.imsglobal.org/spec/lti/claim/version': '1.3.0',
     'https://purl.imsglobal.org/spec/lti/claim/deployment_id': req.query.deployment_id,
     'https://purl.imsglobal.org/spec/lti-dl/claim/content_items': {
-
+      type: 'ltiLink',
+      url: req.query.link_url,
+      title: req.query.title,
     },
   };
-  console.log(idToken);
-  const value = jwt.sign(idToken, fs.readFileSync('private_key.pem'), { algorithm: 'RS256' });
-  console.log(value);
+  const response = jwt.sign(idToken, fs.readFileSync('private_key.pem'), { algorithm: 'RS256' });
   res.status(200).render('../views/lti.ejs', {
-    url: req.query.return_uri,
-    value,
+    url: req.query.return_url,
+    idToken: response,
   });
 });
 
