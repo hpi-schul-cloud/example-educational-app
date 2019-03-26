@@ -42,17 +42,16 @@ router.post('*', async (req, res) => {
   // checking integrity, signature and expiration time
   const idToken = jwt.verify(req.body.id_token,
     config.platform.publicKey,
-    { algorithm: 'RS256' });
+    {
+      algorithm: 'RS256',
+      issuer: config.platform.url,
+      audience: config.credentials.client.id,
+      maxAge: 180,
+    });
 
-  if (idToken.iss !== config.platform.url) {
-    throw new Error('Issuer not matching');
+  if (!idToken.nonce) {
+    throw new Error('No nonce included');
   }
-
-  if (idToken.aud !== config.credentials.client.id) {
-    throw new Error('Audience not matching');
-  }
-
-  // TODO: iat, and nonce check
 
   store.dispatch(setIsAuthenticated(true));
   store.dispatch(setPseudonym(idToken.sub));
