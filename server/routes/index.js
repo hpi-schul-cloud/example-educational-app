@@ -4,6 +4,7 @@ const bodyParser = require('body-parser');
 import fs from 'fs';
 import https from 'https';
 import ssr from './ssr';
+import aasa from './aasa';
 
 const app = express();
 
@@ -21,10 +22,11 @@ app.use(session({
   saveUninitialized: false,
 }));
 
+// app.use(aasa);
 app.use(ssr);
 
 const key = fs.readFileSync('./key.pem');
-const cert = fs.readFileSync('./cert.pem')
+const cert = fs.readFileSync('./cert.pem');
 const httpsOptions = { key, cert };
 
 https.createServer(httpsOptions, app).listen(3000);

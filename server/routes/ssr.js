@@ -27,6 +27,8 @@ import config from '../config';
 
 const router = new Router();
 
+
+// Service functions ———————————————————————————————————————————————————————————————————————————————
 const generateNonce = (length) => {
   let text = '';
   const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -36,11 +38,8 @@ const generateNonce = (length) => {
   return text;
 };
 
-router.post('*', async (req, res) => {
-  const store = createStore(reducers);
-
-  // checking integrity, signature and expiration time
-  const idToken = jwt.verify(req.body.id_token,
+function validateIDToken(idToken) {
+  const _idToken = jwt.verify(idToken,
     config.platform.publicKey,
     {
       algorithm: 'RS256',
@@ -49,18 +48,32 @@ router.post('*', async (req, res) => {
       maxAge: 180,
     });
 
-  if (!idToken.nonce) {
+  if (!_idToken.nonce) {
     throw new Error('No nonce included');
   }
+  return _idToken;
+}
+
+function setupStore(idToken) {
+  const store = createStore(reducers);
 
   store.dispatch(setIsAuthenticated(true));
   store.dispatch(setPseudonym(idToken.sub));
   store.dispatch(setRole(idToken['https://purl.imsglobal.org/spec/lti/claim/roles'][0]));
   if (idToken['https://purl.imsglobal.org/spec/lti/claim/message_type'] ===
-      'LtiDeepLinkingRequest') {
+    'LtiDeepLinkingRequest') {
     store.dispatch(setIsEditable(true));
     store.dispatch(setLtiRequest(idToken));
   }
+  return store;
+}
+
+// Routes ——————————————————————————————————————————————————————————————————————————————————————————
+
+router.post('/lti-mobile', async (req, res) => {
+  const idToken = validateIDToken(req.body.id_token);
+
+  const store = setupStore(idToken);
 
   const context = {};
 
@@ -76,6 +89,45 @@ router.post('*', async (req, res) => {
   );
 
   const finalState = store.getState();
+  console.log('received');
+  console.log(req);
+  console.log(res);
+
+  if (context.url) {
+    res.writeHead(301, {
+      Location: context.url,
+    });
+    res.end();
+  } else {
+    res.status(200).render('../views/index.ejs', {
+      html,
+      script: JSON.stringify(finalState),
+    });
+  }
+});
+
+router.post('*', async (req, res) => {
+  // console.log(req);
+  // checking integrity, signature and expiration time
+  const idToken = validateIDToken(req.body.id_token);
+
+  const store = setupStore(idToken);
+
+  const context = {};
+
+  const html = ReactDOMServer.renderToString(
+    <Provider store={store}>
+      <StaticRouter
+        location={req.originalUrl}
+        context={context}
+      >
+        <App />
+      </StaticRouter>
+    </Provider>,
+  );
+
+  const finalState = store.getState();
+  console.log(finalState);
 
   if (context.url) {
     res.writeHead(301, {
@@ -115,7 +167,7 @@ router.get('/deeplink', async (req, res) => {
   });
 });
 
-router.get('/*', async (req, res) => {
+router.get('/', async (req, res) => {
 
   const store = createStore(reducers);
 

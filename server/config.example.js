@@ -1,8 +1,8 @@
 const config = {
   credentials: {
     client: {
-      id: '',
-      secret: '',
+      id: 'dummy',
+      secret: 'Kvzdxcip5GO6',
     },
     auth: {
       tokenHost: 'https://bp.schul-cloud.org',
@@ -15,13 +15,13 @@ const config = {
   scHost: 'http://localhost:3030/',
   platform: {
     publicKey: '-----BEGIN PUBLIC KEY-----\n' +
-    'MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA1i1lcUZAcdsDxgpup5wT\n' +
-    'At67dtUoaN/uvQGNv4UIdjIenZFGF35u42ON9MRGLb3afWqCHZaaZlZIUeb9vODb\n' +
-    'T9V2JIhMKoNGo0IsQ4JkStRHtvCRnhGCGZEx/PLvNg/a75GAAc5GHYQccVa5dW4A\n' +
-    'ZW08k5cOPFsXYEm5kYun0N5PGbZjM3AZqUQBeZv6QDYLQXMbgDmfyRPQN27fLIY6\n' +
-    'xfTVjYTpxBfYujYt1LDm6FiumZ1PpCqTo6WWOdVMrE9z2KypG4yjGmmWTf762c+o\n' +
-    'BnldokVJdxlkH/HIbFZJ6AvsDgSO8BKkIykqR4aWpWiclV62ZT2MnotzU+9VxHvC\n' +
-    '4wIDAQAB\n' +
+    'MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA+viuhvIetIbtlk9ruoYD\n' +
+    'ToKYY91hynOdE/ILoETDfVzXWnzUVD+IMeA3Lqwhu0LxsqJ4b2jaiXIYfn3VDj4z\n' +
+    'G7FBDgumR8h+N1TK9FbL9LUlUf68vEbArkSEyCbwkgXlTo1KrHiCOdyahMjM0aIv\n' +
+    'wJyRMhoxDXKe3VbzR4p2IKh1rGo4RRZNZdzdy3yXFuyR5wUg5N9n5wVxy87bG4Db\n' +
+    'LIgun/O2WzUyJHSvh9Jd76XczmmvvesOw0RjhOCPw50N0NWhUIAESO4jAU+9z4zA\n' +
+    'OnkfNSOKI+AT1k0Et3AB82Z+lrH+/iWsz1GUUK5f6pBvxRYKBVaO4KEMHaTWOcjO\n' +
+    'KwIDAQAB\n' +
     '-----END PUBLIC KEY-----',
     audience: 'http://localhost:3100/',
   },
