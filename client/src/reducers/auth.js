@@ -13,6 +13,8 @@ export default (state = AUTH, action) => {
       return { ...state, isEditable: action.isEditable };
     case AUTH_ACTIONS.SET_LTI_REQUEST:
       return { ...state, ltiRequest: action.request };
+    case AUTH_ACTIONS.SET_JWT_TOKEN:
+      return { ...state, jwtToken: action.jwtToken };
     default:
       return state;
   }

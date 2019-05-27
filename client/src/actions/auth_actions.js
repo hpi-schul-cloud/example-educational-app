@@ -24,3 +24,8 @@ export const setLtiRequest = request => ({
   type: AUTH_ACTIONS.SET_LTI_REQUEST,
   request,
 });
+
+export const setJwtToken = jwtToken => ({
+  type: AUTH_ACTIONS.SET_JWT_TOKEN,
+  jwtToken,
+});

@@ -13,6 +13,7 @@ import {
   setAuthorizeUri,
   setIsAuthenticated,
   setIsEditable,
+  setJwtToken,
   setLtiRequest,
 } from '../../client/src/actions/auth_actions';
 import {
@@ -72,8 +73,11 @@ function setupStore(idToken) {
 
 router.post('/lti-mobile', async (req, res) => {
   const idToken = validateIDToken(req.body.id_token);
+  // console.log(req.body.id_token);
 
+  // TODO: am besten jwt nochmal mit private key von example app verschlüsseln, um die Anbieter unabh. von der Schulcloud zu machen.
   const store = setupStore(idToken);
+  store.dispatch(setJwtToken(req.body.id_token));
 
   const context = {};
 
@@ -89,9 +93,10 @@ router.post('/lti-mobile', async (req, res) => {
   );
 
   const finalState = store.getState();
-  console.log('received');
-  console.log(req);
-  console.log(res);
+  console.log(finalState);
+  // console.log('received');
+  // console.log(req);
+  // console.log(res);
 
   if (context.url) {
     res.writeHead(301, {
