@@ -4,7 +4,7 @@ export const AUTH = {
   authorizeUri: null,
   isEditable: false,
   ltiRequest: null,
-  jwtToken: null,
+  jwtToken: 'test',
 };
 
 export const ROSTER = {

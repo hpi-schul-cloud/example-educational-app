@@ -5,7 +5,7 @@ import Welcome from './containers/welcome';
 import Authenticate from './containers/authenticate';
 import Play from './containers/play';
 import Chapter from './containers/chapter';
-import OpenApp from './components/open_app';
+import OpenApp from './containers/open_app';
 
 class App extends Component {
   render() {
@@ -21,5 +21,8 @@ class App extends Component {
     );
   }
 }
+
+// Information darüber, wo die App geöffnet werden soll muss in der Route mit kodiert werden
+// z.B.: /lti-mobile/klasse/ha1
 
 export default App;

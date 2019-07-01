@@ -70,14 +70,17 @@ function setupStore(idToken) {
 }
 
 // Routes ——————————————————————————————————————————————————————————————————————————————————————————
+// Information darüber, wo die App geöffnet werden soll muss in der Route mit kodiert werden
+// z.B.: /lti-mobile/klasse/ha1
 
 router.post('/lti-mobile', async (req, res) => {
   const idToken = validateIDToken(req.body.id_token);
-  // console.log(req.body.id_token);
+  console.log(req.body);
 
   // TODO: am besten jwt nochmal mit private key von example app verschlüsseln, um die Anbieter unabh. von der Schulcloud zu machen.
   const store = setupStore(idToken);
-  store.dispatch(setJwtToken(req.body.id_token));
+  const newJWT = jwt.sign(idToken, fs.readFileSync('key.pem'), { algorithm: 'RS256' });
+  store.dispatch(setJwtToken(newJWT));
 
   const context = {};
 

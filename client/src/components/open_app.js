@@ -13,7 +13,7 @@ class OpenApp extends Component {
     return (
       <Secure>
         <div>
-          <a target="_parent" href="https://4ac386aa.ngrok.io" className="button">GO TO APP</a>
+          <a target="_parent" href={`https://b1248765.ngrok.io/Lecture2/Lesson1?jwt=${jwtToken}`} className="button">GO TO APP</a>
           <div>
             JWT: {jwtToken}
           </div>
