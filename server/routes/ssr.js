@@ -54,7 +54,7 @@ router.post('*', async (req, res) => {
   }
 
   store.dispatch(setIsAuthenticated(true));
-  store.dispatch(setPseudonym(idToken.sub));
+  store.dispatch(setPseudonym(idToken.name));
   store.dispatch(setRole(idToken['https://purl.imsglobal.org/spec/lti/claim/roles'][0]));
   if (idToken['https://purl.imsglobal.org/spec/lti/claim/message_type'] ===
       'LtiDeepLinkingRequest') {
@@ -165,7 +165,7 @@ router.get('/*', async (req, res) => {
       { headers: { Authorization: 'Bearer ' + accessToken.token.access_token } },
     );
     const userinfo = await responseUserinfo.json();
-    store.dispatch(setPseudonym(userinfo.sub));
+    store.dispatch(setPseudonym(userinfo.iframe));
     const responseMetadata = await fetch(
       `${config.scHost}roster/users/${encodeURIComponent(userinfo.sub)}/metadata`,
       { headers: { Authorization: accessToken.token.access_token } },
@@ -173,7 +173,7 @@ router.get('/*', async (req, res) => {
     const metadata = await responseMetadata.json();
     store.dispatch(setRole(metadata.data.type));
     // save to session
-    req.session.pseudonym = userinfo.sub;
+    req.session.pseudonym = userinfo.iframe;
     req.session.role = metadata.data.type;
 
     const responseGroups = await fetch(

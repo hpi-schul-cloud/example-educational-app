@@ -35,18 +35,18 @@ class Play extends Component {
           {teachers
           .map(teacher => (
             <tr>
-              <td>{(pseudonym === teacher.user_id ? <b>Du: </b> : '')}</td>
+              <td>{(pseudonym === teacher.username ? <b>Du: </b> : '')}</td>
               <td>Lehrer</td>
-              <td><div dangerouslySetInnerHTML={{ __html: teacher.user_id }} /></td>
+              <td><div dangerouslySetInnerHTML={{ __html: teacher.username }} /></td>
             </tr>
           ))
           }
           {students
           .map(student => (
               <tr>
-                <td>{(pseudonym === student.user_id ? <b>Du: </b> : '')}</td>
+                <td>{(pseudonym === student.username ? <b>Du: </b> : '')}</td>
                 <td>Schüler</td>
-                <td><div dangerouslySetInnerHTML={{ __html: student.user_id }} /></td>
+                <td><div dangerouslySetInnerHTML={{ __html: student.username }} /></td>
               </tr>
           ))
           }
