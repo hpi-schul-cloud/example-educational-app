@@ -8,7 +8,9 @@ For example, here we are retrieving the list of items from the redux store.
 Whenever this list changes, any component that is using this list of item will re-render.
  */
 const mapStateToProps = state => ({
-
+  role: state.roster.role,
+  pseudonym: state.roster.pseudonym,
+  isEditable: state.auth.isEditable,
 });
 
 /*

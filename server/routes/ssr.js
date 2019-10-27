@@ -4,6 +4,8 @@ import { createStore } from 'redux';
 import { Provider } from 'react-redux';
 import { StaticRouter } from 'react-router';
 import oauth2 from 'simple-oauth2';
+import jwt from 'jsonwebtoken';
+import fs from 'fs';
 import Router from 'express-promise-router';
 import fetch from 'isomorphic-fetch';
 import reducers from '../../client/src/reducers/index';
@@ -11,6 +13,7 @@ import {
   setAuthorizeUri,
   setIsAuthenticated,
   setIsEditable,
+  setLtiRequest,
 } from '../../client/src/actions/auth_actions';
 import {
   setRole,
@@ -24,7 +27,96 @@ import config from '../config';
 
 const router = new Router();
 
-router.get('/', async (req, res) => {
+const generateNonce = (length) => {
+  let text = '';
+  const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  for (let i = 0; i < length; i += 1) {
+    text += possible.charAt(Math.floor(Math.random() * possible.length));
+  }
+  return text;
+};
+
+router.post('*', async (req, res) => {
+  const store = createStore(reducers);
+
+  // checking integrity, signature and expiration time
+  const idToken = jwt.verify(req.body.id_token,
+    config.platform.publicKey,
+    {
+      algorithm: 'RS256',
+      issuer: config.platform.url,
+      audience: config.credentials.client.id,
+      maxAge: 180,
+    });
+
+  if (!idToken.nonce) {
+    throw new Error('No nonce included');
+  }
+
+  store.dispatch(setIsAuthenticated(true));
+  store.dispatch(setPseudonym(idToken.name));
+  store.dispatch(setRole(idToken['https://purl.imsglobal.org/spec/lti/claim/roles'][0]));
+  if (idToken['https://purl.imsglobal.org/spec/lti/claim/message_type'] ===
+      'LtiDeepLinkingRequest') {
+    store.dispatch(setIsEditable(true));
+    store.dispatch(setLtiRequest(idToken));
+  }
+
+  const context = {};
+
+  const html = ReactDOMServer.renderToString(
+    <Provider store={store}>
+      <StaticRouter
+        location={req.originalUrl}
+        context={context}
+      >
+        <App />
+      </StaticRouter>
+    </Provider>,
+  );
+
+  const finalState = store.getState();
+
+  if (context.url) {
+    res.writeHead(301, {
+      Location: context.url,
+    });
+    res.end();
+  } else {
+    res.status(200).render('../views/index.ejs', {
+      html,
+      script: JSON.stringify(finalState),
+    });
+  }
+});
+
+router.get('/deeplink', async (req, res) => {
+  const current = new Date();
+  const idToken = {
+    iss: config.credentials.client.id,
+    aud: config.platform.url,
+    sub: '',
+    exp: current.getTime() + (3 * 60),
+    iat: current.getTime(),
+    nonce: generateNonce(16),
+    'https://purl.imsglobal.org/spec/lti/claim/message_type': 'LtiDeepLinkingResponse',
+    'https://purl.imsglobal.org/spec/lti/claim/version': '1.3.0',
+    'https://purl.imsglobal.org/spec/lti/claim/deployment_id': req.query.deployment_id,
+    'https://purl.imsglobal.org/spec/lti-dl/claim/content_items': {
+      type: 'ltiLink',
+      url: req.query.link_url,
+      title: req.query.title,
+    },
+  };
+  const response = jwt.sign(idToken, fs.readFileSync('private_key.pem'), { algorithm: 'RS256' });
+  res.status(200).render('../views/lti.ejs', {
+    url: req.query.return_url,
+    idToken: response,
+  });
+});
+
+router.get('/*', async (req, res) => {
+
   const store = createStore(reducers);
 
   if (req.query.logout) {
@@ -69,8 +161,8 @@ router.get('/', async (req, res) => {
     store.dispatch(setTeachers(req.session.teachers));
   } else if (accessToken) {
     const responseUserinfo = await fetch(
-        `${config.credentials.auth.tokenHost}${config.userinfoPath}`,
-        { headers: { Authorization: 'Bearer ' + accessToken.token.access_token } },
+      `${config.credentials.auth.tokenHost}${config.userinfoPath}`,
+      { headers: { Authorization: 'Bearer ' + accessToken.token.access_token } },
     );
     const userinfo = await responseUserinfo.json();
     store.dispatch(setPseudonym(userinfo.iframe));

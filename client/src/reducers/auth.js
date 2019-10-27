@@ -11,6 +11,8 @@ export default (state = AUTH, action) => {
       return { ...state, authorizeUri: action.uri };
     case AUTH_ACTIONS.SET_IS_EDITABLE:
       return { ...state, isEditable: action.isEditable };
+    case AUTH_ACTIONS.SET_LTI_REQUEST:
+      return { ...state, ltiRequest: action.request };
     default:
       return state;
   }

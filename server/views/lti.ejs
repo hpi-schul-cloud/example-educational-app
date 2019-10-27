@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    <script type="text/javascript">
+      function submit() {
+        document.getElementById('ltiForm').submit();
+      }
+    </script>
+  </head>
+
+  <body onload="submit()">
+
+    <form id="ltiForm" action="<%- url %>" method="post" style="display: none">
+      <input name="id_token" value="<%- idToken %>">
+    </form>
+
+  </body>
+
+</html>

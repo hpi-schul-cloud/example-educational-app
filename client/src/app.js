@@ -13,7 +13,7 @@ class App extends Component {
         <Header />
         <Route exact path="/" component={Play} />
         <Route exact path="/chapter/:number" component={Chapter} />
-        <Route exact path="/welcome/:userId" component={Welcome} />
+        <Route exact path="/launches" component={Welcome} />
         <Route exact path="/auth" component={Authenticate} />
       </div>
     );
