@@ -34,8 +34,7 @@ class Chapter extends Component {
       const returnUrl = encodeURI(req[dls].deep_link_return_url);
       const linkUrl = encodeURI(window.location.href);
       const title = encodeURI(`Example Kapitel ${this.props.match.params.number}`);
-      window.location.href = `/deeplink?return_url=${returnUrl}&
-      deployment_id=${req.deployment_id}&link_url=${linkUrl}&title=${title}`;
+      window.location.href = `/deeplink?return_url=${returnUrl}&deployment_id=${req.deployment_id}&link_url=${linkUrl}&title=${title}&csrf=${req.csrf}`;
     }
   }
 

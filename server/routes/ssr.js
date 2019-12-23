@@ -52,7 +52,7 @@ router.post('*', async (req, res) => {
   if (!idToken.nonce) {
     throw new Error('No nonce included');
   }
-
+  idToken.csrf = req.body._csrf;
   store.dispatch(setIsAuthenticated(true));
   store.dispatch(setPseudonym(idToken.name));
   store.dispatch(setRole(idToken['https://purl.imsglobal.org/spec/lti/claim/roles'][0]));
@@ -112,6 +112,7 @@ router.get('/deeplink', async (req, res) => {
   res.status(200).render('../views/lti.ejs', {
     url: req.query.return_url,
     idToken: response,
+    csrf: req.query.csrf,
   });
 });
 
