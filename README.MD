@@ -39,6 +39,8 @@ This will create create two files: `index.js` in `server/public/js` and `server.
 
 `server.js` will be used for serving the application on port 3000 and `index.js` is the actual react app itself.
 
+Run `openssl req -newkey rsa:2048 -new -nodes -x509 -days 3650 -keyout key.pem -out cert.pem` to create a self-signed certificate for the HTTPS server.
+
 Finally run
 
     npm start
