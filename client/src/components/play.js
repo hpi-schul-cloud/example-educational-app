@@ -37,7 +37,7 @@ class Play extends Component {
             <tr>
               <td>{(pseudonym === teacher.username ? <b>Du: </b> : '')}</td>
               <td>Lehrer</td>
-              <td><div dangerouslySetInnerHTML={{ __html: teacher.username }} /></td>
+              <td><div dangerouslySetInnerHTML={{ __html: decodeURI(teacher.username) }} /></td>
             </tr>
           ))
           }
@@ -46,7 +46,7 @@ class Play extends Component {
               <tr>
                 <td>{(pseudonym === student.username ? <b>Du: </b> : '')}</td>
                 <td>Schüler</td>
-                <td><div dangerouslySetInnerHTML={{ __html: student.username }} /></td>
+                <td><div dangerouslySetInnerHTML={{ __html: decodeURI(student.username) }} /></td>
               </tr>
           ))
           }

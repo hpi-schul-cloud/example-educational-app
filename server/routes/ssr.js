@@ -172,6 +172,7 @@ router.get('/*', async (req, res) => {
       { headers: { Authorization: accessToken.token.access_token } },
     );
     const metadata = await responseMetadata.json();
+    store.dispatch(setPseudonym(decodeURI(metadata.data.username)));
     store.dispatch(setRole(metadata.data.type));
     // save to session
     req.session.pseudonym = userinfo.iframe;
