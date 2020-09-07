@@ -128,7 +128,7 @@ router.get('/*', async (req, res) => {
   const oauth = oauth2.create(config.credentials);
   const authorizationUri = oauth.authorizationCode.authorizeURL({
     redirect_uri: config.redirectUrl,
-    scope: 'openid',
+    scope: config.scopes,
     state: JSON.stringify({ isEditable: (req.query.edit === '1') }), // misusing the state
   });
   store.dispatch(setAuthorizeUri(authorizationUri));
@@ -138,7 +138,7 @@ router.get('/*', async (req, res) => {
     const tokenConfig = {
       code: req.query.code,
       redirect_uri: config.redirectUrl,
-      scope: 'openid',
+      scope: config.scopes,
     };
     const state = JSON.parse(req.query.state);
     store.dispatch(setIsEditable(state.isEditable));
@@ -198,6 +198,24 @@ router.get('/*', async (req, res) => {
       req.session.group = groups.data.groups[0].name;
       req.session.students = users.data.students;
       req.session.teachers = users.data.teachers;
+
+      if (config.scopes.indexOf('homework') !== -1) {
+        const responseHomework = await fetch(
+          `${config.scHost}homework/5f56034849868e0f36cf0239?auth=oauth2`,
+          { headers: { Authorization: accessToken.token.access_token } },
+        );
+        const homework = await responseHomework.json();
+        console.log(homework);
+      }
+      
+      if (config.scopes.indexOf('calendar') !== -1) {
+        const responseCalendar = await fetch(
+          `${config.scHost}calendar?auth=oauth2`,
+          { headers: { Authorization: accessToken.token.access_token } },
+        );
+        const calendar = await responseCalendar.json();
+        console.log(calendar);
+      }
     }
   }
 

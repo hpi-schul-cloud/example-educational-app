@@ -37,7 +37,7 @@ To make a production build of the project, run the following commands
   
 This will create create two files: `index.js` in `server/public/js` and `server.js` in `server/bin`.
 
-`server.js` will be used for serving the application on port 3000 and `index.js` is the actual react app itself.
+`server.js` will be used for serving the application on port 3002 and `index.js` is the actual react app itself.
 
 Run `openssl req -newkey rsa:2048 -new -nodes -x509 -days 3650 -keyout key.pem -out cert.pem` to create a self-signed certificate for the HTTPS server.
 
@@ -45,7 +45,7 @@ Finally run
 
     npm start
 
-The you will be able to access this app from http://localhost:3000.
+Then you will be able to access this app from http://localhost:3002.
 
 To get a distributable tarball of your application, run this command
 

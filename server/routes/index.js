@@ -27,8 +27,8 @@ const key = fs.readFileSync('./key.pem');
 const cert = fs.readFileSync('./cert.pem')
 const httpsOptions = { key, cert };
 
-https.createServer(httpsOptions, app).listen(3000);
-console.log('Hello World listening on https port 3000!');
+https.createServer(httpsOptions, app).listen(3002);
+console.log('Hello World listening on https port 3002!');
 
 app.listen(3001, () => {
   console.log('Hello World listening on http port 3001!');
