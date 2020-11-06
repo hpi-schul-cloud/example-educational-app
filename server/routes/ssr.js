@@ -216,6 +216,15 @@ router.get('/*', async (req, res) => {
         const calendar = await responseCalendar.json();
         console.log(calendar);
       }
+
+      if (config.scopes.indexOf('edusharing') !== -1) {
+        const responseEdusharing= await fetch(
+          `${config.scHost}edu-sharing?auth=oauth2`,
+          { headers: { Authorization: accessToken.token.access_token } },
+        );
+        const edusharing = await responseEdusharing.json();
+        console.log(edusharing);
+      }
     }
   }
 
