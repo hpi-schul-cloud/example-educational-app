@@ -94,7 +94,7 @@ router.get('/deeplink', async (req, res) => {
   const current = new Date();
   const idToken = {
     iss: config.credentials.client.id,
-    aud: config.platform.url,
+    aud: config.platform.audience,
     sub: '',
     exp: current.getTime() + (3 * 60),
     iat: current.getTime(),
