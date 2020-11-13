@@ -5,4 +5,5 @@ node_modules
 /.idea
 /server/cert.pem
 /server/key.pem
+/server/private_key.pem
 /server/config.js

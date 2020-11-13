@@ -38,7 +38,7 @@ const generateNonce = (length) => {
 
 router.post('*', async (req, res) => {
   const store = createStore(reducers);
-  
+
   // checking integrity, signature and expiration time
   const idToken = jwt.verify(req.body.id_token,
     config.platform.publicKey,
@@ -54,7 +54,7 @@ router.post('*', async (req, res) => {
   }
   idToken.csrf = req.body._csrf;
   store.dispatch(setIsAuthenticated(true));
-  store.dispatch(setPseudonym(decodeURI(idToken.name)));
+  store.dispatch(setPseudonym(idToken.name));
   store.dispatch(setRole(idToken['https://purl.imsglobal.org/spec/lti/claim/roles'][0]));
   if (idToken['https://purl.imsglobal.org/spec/lti/claim/message_type'] ===
       'LtiDeepLinkingRequest') {
