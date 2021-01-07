@@ -1,18 +1,18 @@
 const config = {
   credentials: {
     client: {
-      id: '',
-      secret: '',
+      id: 'dummy',
+      secret: '123456789',
     },
     auth: {
-      tokenHost: 'https://bp.schul-cloud.org',
-      tokenPath: '/hydra/oauth2/token',
-      authorizePath: '/hydra/oauth2/auth',
+      tokenHost: 'http://localhost:9000',
+      tokenPath: '/oauth2/token',
+      authorizePath: '/oauth2/auth',
     },
   },
-  scopes: 'openid',
+  scopes: 'openid offline',
   userinfoPath: '/userinfo',
-  redirectUrl: 'http://localhost:3001/auth',
+  redirectUrl: 'https://localhost:3002/auth',
   scHost: 'http://localhost:3030/',
   platform: {
     publicKey: '-----BEGIN PUBLIC KEY-----\n' +

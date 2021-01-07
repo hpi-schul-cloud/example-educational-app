@@ -11,9 +11,11 @@ This app written with [ExpressJS], [Redux] and [ReactJS] makes use of the educat
 
 # Configuration
 
-Copy `example.config.js` to `config.js` and put in the right values.
+Copy `server/config.example.js` to `server/config.js` and put in the right values.
 
 Create a SSH key pair and save the private key in `server/private_key.pem`.
+
+For the local development setup, you can copy 'server/cert.dev.pem' and 'server/key.dev.pem' to 'server/cert.pem' and 'server/key.pem'.
 
 # Installation
 
